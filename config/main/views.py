@@ -1,43 +1,22 @@
-from rest_framework import generics
-from .models import Category, Foods, Comment
-from .serializers import CategorySerializer, FoodsSerializer, CommentSerializer
-from .permissions import IsAdminOrReadOnly
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import Foods, Category, Comment
+from .serializers import FoodsSerializer, CategorySerializer, CommentSerializer
 
+class FoodsListView(APIView):
+    def get(self, request):
+        foods = Foods.objects.all()  # Barcha ovqatlarni olish
+        serializer = FoodsSerializer(foods, many=True)
+        return Response(serializer.data)
 
-class CategoryListCreateView(generics.ListCreateAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly]
+class CategoryListView(APIView):
+    def get(self, request):
+        categories = Category.objects.all()  # Barcha kategoriyalarni olish
+        serializer = CategorySerializer(categories, many=True)
+        return Response(serializer.data)
 
-
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class FoodsListView(generics.ListCreateAPIView):
-    queryset = Foods.objects.all()
-    serializer_class = FoodsSerializer
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class FoodDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Foods.objects.all()
-    serializer_class = FoodsSerializer
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class CommentCreateView(generics.CreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = [IsAdminOrReadOnly]
-
-
-class CommentListView(generics.ListAPIView):
-    serializer_class = CommentSerializer
-    permission_classes = [IsAdminOrReadOnly]
-
-    def get_queryset(self):
-        food_id = self.kwargs['food_id']
-        return Comment.objects.filter(food_id=food_id)
+class CommentListView(APIView):
+    def get(self, request, food_id):
+        comments = Comment.objects.filter(food_id=food_id)  # Ma'lum ovqatga tegishli kommentlarni olish
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
