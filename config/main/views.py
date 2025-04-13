@@ -1,22 +1,30 @@
+from rest_framework import pagination
+from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
 from .models import Foods, Category, Comment
 from .serializers import FoodsSerializer, CategorySerializer, CommentSerializer
 
-class FoodsListView(APIView):
-    def get(self, request):
-        foods = Foods.objects.all()
-        serializer = FoodsSerializer(foods, many=True)
-        return Response(serializer.data)
 
-class CategoryListView(APIView):
-    def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
 
-class CommentListView(APIView):
-    def get(self, request, food_id):
-        comments = Comment.objects.filter(food_id=food_id)
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+class FoodsListView(ListAPIView):
+    queryset = Foods.objects.all()
+    serializer_class = FoodsSerializer
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated]
+
+class CommentListView(ListAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    # authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated]
+
